@@ -1,0 +1,79 @@
+```{---}
+
+title: "In Class Exercise 02"
+
+author: "Paul Bryant Madhavan"
+
+Date: "26/8/2024 
+
+---
+
+```
+
+```{r}
+pacman::p_load(sf, tidyverse, ggstatsplot, tmap)
+```
+
+```{r}
+mpsz14_shp = st_read(dsn = "./data", 
+                  layer = "MP14_SUBZONE_WEB_PL")
+```
+
+Write Shape File to KML
+
+```{r}
+st_write(mpsz14_shp,"./data/MP14_SUBZONE_WEB_PL.kml", delete_dsn = TRUE)
+```
+
+```{r}
+mpsz14_kml = st_read(dsn = "./data/MP14_SUBZONE_WEB_PL.kml")
+```
+
+Load 2019 Shape File
+
+```{r}
+mpsz19_shp = st_read(dsn = "./data", 
+                  layer = "MPSZ-2019")
+```
+
+Load 2019 KML File
+
+```{r}
+mpsz19_kml = st_read(dsn = "./data/MasterPlan2019SubzoneBoundaryNoSeaKML.kml")
+
+```
+
+Transform Shape Data
+
+```{r}
+mpsz19_shp = st_read(dsn = "./data", 
+                  layer = "MPSZ-2019") %>%
+  st_transform(crs = 3414)
+```
+
+Load Preschool Data
+
+```{r}
+preschool = st_read(dsn = "./data/PreSchoolsLocation.kml") %>%
+  st_transform(crs = 3414)
+```
+
+```{r}
+st_crs(mpsz19_shp)
+```
+
+```{r}
+popdata = read_csv("./data/respopagesextod2023.csv")
+```
+
+Group Columns, sum up population.
+
+```{r}
+popdata2023 <- popdata %>%
+  group_by(PA,SZ,AG)   %>%
+  summarise(`POP` = sum(`Pop`)) %>%
+  ungroup() %>%
+  pivot_wider(names_from = AG,
+              values_from = POP)
+colnames(popdata2023)
+```
